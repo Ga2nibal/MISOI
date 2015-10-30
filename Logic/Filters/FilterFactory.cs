@@ -1,6 +1,6 @@
-﻿namespace Lab1.Filters
+﻿namespace Logic.Filters
 {
-    class FilterFactory
+    public class FilterFactory
     {
         public static IFilter Create(string filterKey)
         {
@@ -21,6 +21,10 @@
 
                 case FilterNames.BoundaryFilter:
                     result = new BoundaryFilter();
+                    break;
+
+                case FilterNames.BoxFilter:
+                    result = new BoxFilter();
                     break;
             }
 

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Lab1.Filters;
+using Logic.Filters;
 
 namespace Lab1
 {
@@ -42,15 +42,17 @@ namespace Lab1
             if (choosenRadioButton == null)
                 return;
 
-            var filter = FilterFactory.Create(choosenRadioButton.Text);
-            if (choosenRadioButton.Text == "Monochrome")
+            var filter = FilterFactory.Create(choosenRadioButton.Tag as string);
+            if (filter is MonochromeFilter)
             {
-                var monochromeFilter = filter as MonochromeFilter;
-                if (monochromeFilter != null) monochromeFilter.Level = hScrollBarLevel.Value;
+                var monochromeFilter = (MonochromeFilter)filter;
+                monochromeFilter.Level = hScrollBarLevel.Value;
             }
 
             waitLable.Text = "Ждите";
             _filteredPictureBox.Image = await filter.AsyncFilter((Bitmap)_sourcePictureBox.Image);
+            _filteredPictureBox.Update();
+            buttonResetToSourcImg_Click(null, null);
             waitLable.Text = "Ok";
         }
 

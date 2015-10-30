@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
-using System.Threading.Tasks;
 
-namespace Lab1.Filters
+namespace Logic.Filters
 {
-    class BoundaryFilter : BaseAbstractFilter
+    public class BoundaryFilter : BaseAbstractFilter
     {
         public override Bitmap Filter(Bitmap image)
         {
@@ -11,9 +10,10 @@ namespace Lab1.Filters
             {
                 for (int i = 0; i < image.Width; i++)
                 {
-                    if (IsBoundary(image, i, j))
+                    int gr = 0;
+                    if (IsBoundary(image, i, j, ref gr))
                     {
-                        image.SetPixel(i, j, Color.White);
+                        image.SetPixel(i, j, Color.FromArgb(gr, gr, gr));
                     }
                 }
             }
@@ -22,7 +22,7 @@ namespace Lab1.Filters
 
         private int GetBrightness(Color c)
         {
-            return (int)(0.3 * c.R + 0.59 * c.G + 0.11 * c.B);
+            return (int) (0.3*c.R + 0.59*c.G + 0.11*c.B);
         }
 
         private int GetBrightness(Bitmap bitmap, int x, int y)
@@ -31,10 +31,10 @@ namespace Lab1.Filters
             return GetBrightness(color);
         }
 
-        private bool IsBoundary(Bitmap bitmap, int x, int y)
+        private bool IsBoundary(Bitmap bitmap, int x, int y, ref int gr)
         {
             int Black = 0;
-            if (GetBrightness(bitmap, x, y) == Black)
+            if ((gr = GetBrightness(bitmap, x, y)) == Black)
             {
                 return false;
             }

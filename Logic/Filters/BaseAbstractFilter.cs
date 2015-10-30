@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Lab1.Filters
+namespace Logic.Filters
 {
-    abstract class BaseAbstractFilter : IFilter
+    public abstract class BaseAbstractFilter : IFilter
     {
         public Task<Bitmap> AsyncFilter(Bitmap image)
         {

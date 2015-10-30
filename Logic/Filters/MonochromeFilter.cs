@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace Lab1.Filters
+namespace Logic.Filters
 {
-    class MonochromeFilter : BaseAbstractFilter
+    public class MonochromeFilter : BaseAbstractFilter
     {
         public int Level { get; set; }
 
@@ -12,8 +12,8 @@ namespace Lab1.Filters
             {
                 for (int i = 0; i < image.Width; i++)
                 {
-                    var color = image.GetPixel(i, j);
-                    int sr = (color.R + color.G + color.B) / 3;
+                    Color color = image.GetPixel(i, j);
+                    int sr = (color.R + color.G + color.B)/3;
                     image.SetPixel(i, j, (sr < Level ? Color.Black : Color.White));
                 }
             }
