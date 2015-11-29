@@ -41,6 +41,7 @@ namespace Lab1
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBoxFilters = new System.Windows.Forms.GroupBox();
+            this.radioButtonGray = new System.Windows.Forms.RadioButton();
             this.radioButtonRevert = new System.Windows.Forms.RadioButton();
             this.radioButtonBox = new System.Windows.Forms.RadioButton();
             this.radioButtonBoundary = new System.Windows.Forms.RadioButton();
@@ -52,7 +53,7 @@ namespace Lab1
             this.buttonOpenImage = new System.Windows.Forms.Button();
             this._filteredPictureBox = new System.Windows.Forms.PictureBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.radioButtonGray = new System.Windows.Forms.RadioButton();
+            this.buttonFindRow = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._sourcePictureBox)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBoxFilters.SuspendLayout();
@@ -70,6 +71,7 @@ namespace Lab1
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonFindRow);
             this.panel1.Controls.Add(this.buttonHough);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
@@ -170,6 +172,19 @@ namespace Lab1
             this.groupBoxFilters.TabIndex = 3;
             this.groupBoxFilters.TabStop = false;
             this.groupBoxFilters.Text = "Choose filter";
+            // 
+            // radioButtonGray
+            // 
+            this.radioButtonGray.AutoSize = true;
+            this.radioButtonGray.Location = new System.Drawing.Point(408, 13);
+            this.radioButtonGray.Name = "radioButtonGray";
+            this.radioButtonGray.Size = new System.Drawing.Size(47, 17);
+            this.radioButtonGray.TabIndex = 5;
+            this.radioButtonGray.TabStop = true;
+            this.radioButtonGray.Tag = "Gray";
+            this.radioButtonGray.Text = "Gray";
+            this.radioButtonGray.UseVisualStyleBackColor = true;
+            this.radioButtonGray.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // radioButtonRevert
             // 
@@ -286,18 +301,15 @@ namespace Lab1
             this._filteredPictureBox.TabIndex = 2;
             this._filteredPictureBox.TabStop = false;
             // 
-            // radioButtonGray
+            // buttonFindRow
             // 
-            this.radioButtonGray.AutoSize = true;
-            this.radioButtonGray.Location = new System.Drawing.Point(408, 13);
-            this.radioButtonGray.Name = "radioButtonGray";
-            this.radioButtonGray.Size = new System.Drawing.Size(47, 17);
-            this.radioButtonGray.TabIndex = 5;
-            this.radioButtonGray.TabStop = true;
-            this.radioButtonGray.Tag = "Gray";
-            this.radioButtonGray.Text = "Gray";
-            this.radioButtonGray.UseVisualStyleBackColor = true;
-            this.radioButtonGray.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.buttonFindRow.Location = new System.Drawing.Point(803, 32);
+            this.buttonFindRow.Name = "buttonFindRow";
+            this.buttonFindRow.Size = new System.Drawing.Size(75, 23);
+            this.buttonFindRow.TabIndex = 9;
+            this.buttonFindRow.Text = "findRow";
+            this.buttonFindRow.UseVisualStyleBackColor = true;
+            this.buttonFindRow.Click += new System.EventHandler(this.buttonFindRow_Click);
             // 
             // Form1
             // 
@@ -343,6 +355,7 @@ namespace Lab1
         private RadioButton radioButtonRevert;
         private Button buttonHough;
         private RadioButton radioButtonGray;
+        private Button buttonFindRow;
     }
 }
 

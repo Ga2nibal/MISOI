@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,7 +12,9 @@ namespace Lab1
     {
          private OpenFileDialog _openFileDialog = new OpenFileDialog();
         private SaveFileDialog _saveFileDialog = new SaveFileDialog();
-        private Bitmap _sourceImage;                                                                                                                                                                                    bool schetflag = false;       
+        private Bitmap _sourceImage;
+        private Bitmap _loadedBitmap;
+        private Dictionary<int, List<Point>> _circlePoints;
 
         public Form1()
         {
@@ -25,9 +28,10 @@ namespace Lab1
             if (dialogResult == DialogResult.OK)
             {
                 var image = new Bitmap(_openFileDialog.FileName);
-                _sourcePictureBox.Image = image;                                                                                                                                                                        if (_openFileDialog.FileName.Equals("s4etchic.jpg")) schetflag = true;
+                _sourcePictureBox.Image = image;    
 
                 _sourceImage = _sourcePictureBox.Image.Clone() as Bitmap;
+                _loadedBitmap = _sourcePictureBox.Image.Clone() as Bitmap;
             }
         }
 
@@ -61,6 +65,7 @@ namespace Lab1
         private void buttonResetToSourcImg_Click(object sender, EventArgs e)
         {
             _sourcePictureBox.Image = _sourceImage.Clone() as Bitmap;
+            _sourcePictureBox.Update();
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -94,9 +99,9 @@ namespace Lab1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var sourceImage = (Bitmap)_filteredPictureBox.Image;
+            _sourceImage = (Bitmap)_filteredPictureBox.Image;
             _filteredPictureBox.Image = null;
-            _sourcePictureBox.Image = sourceImage;
+            _sourcePictureBox.Image = _sourceImage.Clone() as Bitmap;
             _sourcePictureBox.Update();
             _filteredPictureBox.Update();
         }
@@ -116,13 +121,23 @@ namespace Lab1
             _filteredPictureBox.Image = imageProcessor.GetMarkedBitmap();
             _filteredPictureBox.Update();
             MessageBox.Show("ShowCircles");
-            _filteredPictureBox.Image = imageProcessor.GetCircle(_sourceImage);
+            Bitmap result;
+            _circlePoints = imageProcessor.GetCirclePoints(_loadedBitmap.Clone() as Bitmap, out result);
+            _filteredPictureBox.Image = result;
             _filteredPictureBox.Update();
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void buttonFindRow_Click(object sender, EventArgs e)
+        {
+            Bitmap result;
+            var list = ImageProcessor.GetCounterArea(_sourcePictureBox.Image.Clone() as Bitmap, _circlePoints, out result);
+            _filteredPictureBox.Image = result;
+            _filteredPictureBox.Update();
         }
     }
 }

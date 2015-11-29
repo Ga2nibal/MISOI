@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace Logic
 {
@@ -235,7 +234,7 @@ namespace Logic
                             var shape = new Shape() { Marker = _markedImage[i, j] };
                             x.Add(_markedImage[i, j], shape);
                         }
-                        x[_markedImage[i, j]].Points.Add(new Point(i, j));
+                        x[_markedImage[i, j]].AddPoint(new Point(i, j));
                     }
                 }
             }
@@ -248,21 +247,23 @@ namespace Logic
             //    classificator.CalculateProperties(shape);
             //}
 
+            _shapes = _shapes.AsParallel().Where(s => s.Points.Count > 10000 && Math.Abs(1 - s.GetAttitudeheightToWeight()) < 0.25).ToList();
             _shapes.Sort((s, s1) => s1.Points.Count - s.Points.Count);
             int newMark = 0;
-            Dictionary<int, Shape> top20Shape = _shapes.Take(30).ToDictionary(s =>
-            {
-                int oldMark = s.Marker;
-                s.Marker = newMark;
-                newMark++;
-                return oldMark;
-            });
+            Dictionary<int, Shape> topShapes =
+                _shapes.ToDictionary(s =>
+                    {
+                        int oldMark = s.Marker;
+                        s.Marker = newMark;
+                        newMark++;
+                        return oldMark;
+                    });
             for (int i = 1; i < _markedImage.GetLength(0); i++)
             {
                 for (int j = 1; j < _markedImage.GetLength(1); j++)
                 {
                     Shape curShape;
-                    if (top20Shape.TryGetValue(_markedImage[i, j], out curShape))
+                    if (topShapes.TryGetValue(_markedImage[i, j], out curShape))
                     {
                         _markedImage[i, j] = curShape.Marker;
                     }
@@ -273,7 +274,7 @@ namespace Logic
                 }
             }
 
-            _shapes = top20Shape.Values.ToList();
+            _shapes = topShapes.Values.ToList();
             classificator.FindParents(_shapes);
             //ClearEdges();
             classificator = new ShapePropertyHelper(_markedImage);
@@ -475,19 +476,243 @@ namespace Logic
         public Bitmap GetCircle(Bitmap sourceBitmap)
         {
             var helper = new ShapePropertyHelper(_markedImage);
-            Debugger.Launch();
-            var circles = Shapes.Where(s => helper.IsCircle(s)).ToList();
+            double koefToCircle = ShapePropertyHelper.GetSimilarityCoefficientToCircle(Shapes[0]);
+            Shape circleShape = Shapes[0];
+            for (int i = 1; i < Shapes.Count; i++)
+            {
+                double simCoef = ShapePropertyHelper.GetSimilarityCoefficientToCircle(Shapes[i]);
+                if (simCoef < koefToCircle)
+                {
+                    koefToCircle = simCoef;
+                    circleShape = Shapes[i];
+                }
+            }
             Bitmap res = new Bitmap(_markedImage.GetLength(0), _markedImage.GetLength(1));
-            for (int x = 0; x < res.Width; x++)
-                for (int y = 0; y < res.Height; y++)
+            for(int i = 0; i < res.Width; i++)
+                for(int j = 0; j < res.Height; j++)
+                    res.SetPixel(i,j,Color.Black);
+            int circleMark = circleShape.Marker;
+
+            //for (int y = circleShape.MinY; y <= circleShape.MaxY; y++)
+            //{
+            //    int startCircleInRow = 0, endCircleInRow = -1;
+            //    for (int x = circleShape.MinX; x < circleShape.MaxX; x++)
+            //    {
+            //        int mark = _markedImage[x, y];
+            //        if (circleMark == mark)
+            //        {
+            //            if (startCircleInRow == 0)
+            //                startCircleInRow = x;
+            //            endCircleInRow = x;
+            //        }
+            //        //int mark = _markedImage[x, y];
+            //        //if (mark < 0 || circleShape.Marker != mark)
+            //        //    res.SetPixel(x, y, Color.Black);
+            //        //else
+            //        //    res.SetPixel(x, y, sourceBitmap.GetPixel(x, y));
+            //    }
+            //    for (int x1 = startCircleInRow; x1 <= endCircleInRow; x1++)
+            //    {
+            //        Color curColor = sourceBitmap.GetPixel(x1, y);
+            //        int sum = curColor.R + curColor.G + curColor.B;
+            //        double partOfRed = ((double) curColor.R)/sum;
+            //        if (partOfRed > 0.5)
+            //        {
+            //            for (int x = startCircleInRow; x <= endCircleInRow; x++)
+            //            {
+            //                res.SetPixel(x, y, sourceBitmap.GetPixel(x, y));
+            //            }
+            //            break;
+            //        }
+            //    }
+            //}
+
+            for (int y = circleShape.MinY; y <= circleShape.MaxY; y++)
+            {
+                int startCircleInRow = 0, endCircleInRow = -1;
+                for (int x = circleShape.MinX; x < circleShape.MaxX; x++)
                 {
                     int mark = _markedImage[x, y];
-                    if (mark < 0 || circles.All(c => c.Marker != mark))
-                        res.SetPixel(x, y, Color.Black);
-                    else
-                        res.SetPixel(x, y, sourceBitmap.GetPixel(x,y));
+                    if (circleMark == mark)
+                    {
+                        if (startCircleInRow == 0)
+                            startCircleInRow = x;
+                        endCircleInRow = x;
+                    }
+                    //int mark = _markedImage[x, y];
+                    //if (mark < 0 || circleShape.Marker != mark)
+                    //    res.SetPixel(x, y, Color.Black);
+                    //else
+                    //    res.SetPixel(x, y, sourceBitmap.GetPixel(x, y));
                 }
+                for (int x = startCircleInRow; x <= endCircleInRow; x++)
+                {
+                    res.SetPixel(x, y, sourceBitmap.GetPixel(x, y));
+                }
+            }
             return res;
+        }
+
+        public Dictionary<int, List<Point>> GetCirclePoints(Bitmap sourceBitmap, out Bitmap resultBitmap)
+        {
+            double koefToCircle = ShapePropertyHelper.GetSimilarityCoefficientToCircle(Shapes[0]);
+            Shape circleShape = Shapes[0];
+            for (int i = 1; i < Shapes.Count; i++)
+            {
+                double simCoef = ShapePropertyHelper.GetSimilarityCoefficientToCircle(Shapes[i]);
+                if (simCoef < koefToCircle)
+                {
+                    koefToCircle = simCoef;
+                    circleShape = Shapes[i];
+                }
+            }
+            Dictionary<int, List<Point>> res = new Dictionary<int, List<Point>>();
+            resultBitmap = new Bitmap(_markedImage.GetLength(0), _markedImage.GetLength(1));
+            for (int i = 0; i < resultBitmap.Width; i++)
+                for (int j = 0; j < resultBitmap.Height; j++)
+                    resultBitmap.SetPixel(i, j, Color.Black);
+            int circleMark = circleShape.Marker;
+            for (int y = circleShape.MinY; y <= circleShape.MaxY; y++)
+            {
+                int startCircleInRow = 0, endCircleInRow = -1;
+                for (int x = circleShape.MinX; x < circleShape.MaxX; x++)
+                {
+                    int mark = _markedImage[x, y];
+                    if (circleMark == mark)
+                    {
+                        if (startCircleInRow == 0)
+                            startCircleInRow = x;
+                        endCircleInRow = x;
+                    }
+                }
+                res.Add(y, new List<Point>());
+                for (int x = startCircleInRow; x <= endCircleInRow; x++)
+                {
+                    res[y].Add(new Point(x, y));
+                    resultBitmap.SetPixel(x,y, sourceBitmap.GetPixel(x,y));
+                }
+            }
+            return res;
+        }
+
+        public static Dictionary<int, List<Point>> GetCounterArea(Bitmap sourceImage, Dictionary<int, List<Point>> circlePoints,
+            out Bitmap resultBitmap)
+        {
+            resultBitmap = new Bitmap(sourceImage.Width, sourceImage.Height);
+            for (int i = 0; i < resultBitmap.Width; i++)
+                for (int j = 0; j < resultBitmap.Height; j++)
+                    resultBitmap.SetPixel(i, j, Color.Black);
+            Dictionary<int, List<int>> rowIntervals = new Dictionary<int, List<int>>();
+            int rowsCount = circlePoints.Count;
+            int skipCount = rowsCount / 5;
+            List<int> rowsKeys = circlePoints.Keys.OrderBy(i => i).Take(rowsCount - skipCount).Skip(skipCount).ToList();
+            foreach (int rowsKey in rowsKeys)
+            {
+                rowIntervals.Add(rowsKey, new List<int>());
+                int counter = 0;
+                foreach (Point circlePoint in circlePoints[rowsKey])
+                {
+                    Color pixel = sourceImage.GetPixel(circlePoint.X, circlePoint.Y);
+                    if (pixel.R == 0)
+                    {
+                        if (counter != 0)
+                            rowIntervals[rowsKey].Add(counter);
+                        counter = 0;
+                    }
+                    else
+                        counter++;
+                }
+            }
+
+            foreach (int rowsKey in rowsKeys)
+            {
+                if (rowIntervals[rowsKey].Count < 15)
+                    rowIntervals.Remove(rowsKey);
+                //else
+                //{
+                //    foreach (Point cPoint in circlePoints[rowsKey])
+                //    {
+                //        resultBitmap.SetPixel(cPoint.X, cPoint.Y, sourceImage.GetPixel(cPoint.X, cPoint.Y));
+                //    }
+                //}
+            }
+            rowsKeys = rowIntervals.Keys.OrderBy(k=>k).ToList();
+            List<List<int>> groupRows = new List<List<int>>();
+            int lastElement = rowsKeys[0];
+            groupRows.Add(new List<int>());
+            int groupcounter = 0;
+            for (int i = 1; i < rowsKeys.Count; i++)
+            {
+                groupRows[groupcounter].Add(lastElement);
+                if (rowsKeys[i] - 1 != lastElement)
+                {
+                    groupRows.Add(new List<int>());
+                    groupcounter++;
+                }
+                lastElement = rowsKeys[i]; 
+            }
+
+            for (int i = groupRows.Count - 1; i >= 0; i--)
+            {
+                if (groupRows[i].Count < 10) //10 - min groupLineCount
+                {
+                    foreach (int row in groupRows[i])
+                    {
+                        rowsKeys.Remove(row);
+                        rowIntervals.Remove(row);
+                    }
+                    groupRows.RemoveAt(i);
+                }
+            }
+
+            //              group, Dispersia
+            List<KeyValuePair<int,double>> groupDespersia = new List<KeyValuePair<int, double>>();
+            for (int i = 0; i < groupRows.Count; i++)
+            {
+                List<int> rows = groupRows[i];
+                int firstRow = (int)(rows.Count*0.3);
+                int avgRow = (int) (rows.Count/2);
+                int lastRow = (int) (rows.Count*0.8);
+                double sumOfDisp = CalculateDispersia(rowIntervals[groupRows[i][firstRow]]) +
+                                   CalculateDispersia(rowIntervals[groupRows[i][avgRow]])
+                                   + CalculateDispersia(rowIntervals[groupRows[i][lastRow]]);
+                groupDespersia.Add(new KeyValuePair<int, double>(i, sumOfDisp));
+            }
+
+            KeyValuePair<int, double> minGroup = groupDespersia.OrderBy(kv => kv.Value).First();
+            List<int> counteRows = groupRows[minGroup.Key];
+
+            Dictionary<int, List<Point>> res = new Dictionary<int, List<Point>>();
+            foreach (int counteRow in counteRows)
+            {
+                res.Add(counteRow, circlePoints[counteRow]);
+            }
+
+            foreach (var rowpoints in res.Values)
+            {
+                foreach (Point cPoint in rowpoints)
+                {
+                    resultBitmap.SetPixel(cPoint.X, cPoint.Y, sourceImage.GetPixel(cPoint.X, cPoint.Y));
+                }
+            }
+
+            foreach (var rowpoints in res.Values)
+            {
+                foreach (Point cPoint in rowpoints)
+                {
+                    resultBitmap.SetPixel(cPoint.X, cPoint.Y, sourceImage.GetPixel(cPoint.X, cPoint.Y));
+                }
+            }
+
+            return res;
+        }
+
+        //without first & last interval
+        private static double CalculateDispersia(List<int> intervals)
+        {
+            intervals = intervals.Take(intervals.Count - 1).Skip(1).ToList();//Sorry GC
+            double avg = ((double)intervals.Sum())/intervals.Count;
+            return intervals.Select(i => (avg - i)*(avg - i)).Sum()/intervals.Count;
         }
     }
 }

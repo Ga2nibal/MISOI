@@ -37,11 +37,11 @@ namespace Logic
                 }
             double xRad = (maxX - minX)/2;
             double yRad = (maxY - minY)/2;
-            if (xRad <= 0 || yRad <= 0 || (Math.Abs(1 -  xRad/yRad)) > 0.12)
+            if (xRad <= 0 || yRad <= 0 || (Math.Abs(1 - xRad/yRad)) > 0.12)
             {
-                MessageBox.Show(String.Format("m:{0}, 1.:   {1}", shape.Marker, (Math.Abs(1 - xRad / yRad).ToString())));
-            return false;
-        }
+                MessageBox.Show(String.Format("m:{0}, 1.:   {1}", shape.Marker, (Math.Abs(1 - xRad/yRad).ToString())));
+                return false;
+            }
             double rad = (xRad + yRad)/2;
             double per = 2*Math.PI*rad;
             double shapePer = (double) shape.GetOutPerimenter();
@@ -60,6 +60,25 @@ namespace Logic
             //if (shape.ChildShapes == null || shape.ChildShapes.Count == 0)
             //    return false;
             return true;
+        }
+
+        /// <summary>
+        ///     Чем меньше, тем больше похож
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <returns></returns>
+        public static double GetSimilarityCoefficientToCircle(Shape shape)
+        {
+            double byRadius = Math.Abs(1 - shape.GetAttitudeheightToWeight());
+
+            double xRad = (shape.MaxX - shape.MinX)/2;
+            double yRad = (shape.MaxY - shape.MinY)/2;
+             double rad = (xRad + yRad)/2;
+            double matnSq = Math.PI*rad*rad;
+
+            double bySquere = Math.Abs(1 - (matnSq/shape.Square));
+
+            return byRadius + bySquere;
         }
 
         public void CalculateProperties(Shape shape)
