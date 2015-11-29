@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Logic;
@@ -15,6 +16,8 @@ namespace Lab1
         private Bitmap _sourceImage;
         private Bitmap _loadedBitmap;
         private Dictionary<int, List<Point>> _circlePoints;
+        private Dictionary<int, List<Point>> _rowsPoints;
+        private Dictionary<int, List<Point>> _objectsDictPoints; 
 
         public Form1()
         {
@@ -135,9 +138,64 @@ namespace Lab1
         private void buttonFindRow_Click(object sender, EventArgs e)
         {
             Bitmap result;
-            var list = ImageProcessor.GetCounterArea(_sourcePictureBox.Image.Clone() as Bitmap, _circlePoints, out result);
+            _rowsPoints = ImageProcessor.GetCounterArea(_sourcePictureBox.Image.Clone() as Bitmap, _circlePoints, out result);
             _filteredPictureBox.Image = result;
             _filteredPictureBox.Update();
+        }
+
+        private void buttonfindNumber_Click(object sender, EventArgs e)
+        {
+            Bitmap result;
+            _objectsDictPoints = ImageProcessor.DetectCounterNumbers(_sourcePictureBox.Image.Clone() as Bitmap,
+                _rowsPoints, out result);
+            //_filteredPictureBox.Image = result;
+            //_filteredPictureBox.Update();
+
+            Bitmap resultBitmap = new Bitmap(_loadedBitmap.Width, _loadedBitmap.Height);
+            Color zeroColor = Color.FromArgb(0, 0, 0, 0);
+            for (int i = 0; i < resultBitmap.Width; i++)
+                for (int j = 0; j < resultBitmap.Height; j++)
+                    resultBitmap.SetPixel(i, j, zeroColor);
+            foreach (var rowpoints in _objectsDictPoints.Values)
+            {
+                foreach (Point cPoint in rowpoints)
+                {
+                    resultBitmap.SetPixel(cPoint.X, cPoint.Y, _loadedBitmap.GetPixel(cPoint.X, cPoint.Y));
+                }
+            }
+            _filteredPictureBox.Image = resultBitmap;
+            _filteredPictureBox.Update();
+
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            DialogResult resultDirDialog = fbd.ShowDialog();
+            if(resultDirDialog != DialogResult.OK)
+                return;
+            string dirPath = fbd.SelectedPath;
+            if (!Directory.Exists(dirPath))
+                Directory.CreateDirectory(dirPath);
+            var toremove = _objectsDictPoints.Where(kv => kv.Value.Count < 30).Select(i => i.Key).ToArray();
+            foreach (int i in toremove)
+            {
+                _objectsDictPoints.Remove(i);
+            }
+            List<Image> numbersImages = new List<Image>(_objectsDictPoints.Count);
+            foreach (KeyValuePair<int, List<Point>> objectNumberValuePair in _objectsDictPoints)
+            {
+                int minX = objectNumberValuePair.Value.Min(p => p.X);
+                int minY = objectNumberValuePair.Value.Min(p => p.Y);
+                int maxX = objectNumberValuePair.Value.Max(p => p.X);
+                int maxY = objectNumberValuePair.Value.Max(p => p.Y);
+                Bitmap bitmap = new Bitmap(maxX-minX+1, maxY-minY+1);
+                foreach (Point p in objectNumberValuePair.Value)
+                    bitmap.SetPixel(p.X-minX, p.Y-minY, _loadedBitmap.GetPixel(p.X, p.Y));
+                numbersImages.Add(bitmap);
+            }
+            for (int i = 0; i < numbersImages.Count; i++)
+            {
+                string imageFilepath = Path.Combine(dirPath, i + ".jpg");
+                numbersImages[i].Save(imageFilepath);
+
+            }
         }
     }
 }

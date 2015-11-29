@@ -33,6 +33,7 @@ namespace Lab1
         {
             this._sourcePictureBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonFindRow = new System.Windows.Forms.Button();
             this.buttonHough = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -53,7 +54,7 @@ namespace Lab1
             this.buttonOpenImage = new System.Windows.Forms.Button();
             this._filteredPictureBox = new System.Windows.Forms.PictureBox();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.buttonFindRow = new System.Windows.Forms.Button();
+            this.buttonfindNumber = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._sourcePictureBox)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBoxFilters.SuspendLayout();
@@ -71,6 +72,7 @@ namespace Lab1
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonfindNumber);
             this.panel1.Controls.Add(this.buttonFindRow);
             this.panel1.Controls.Add(this.buttonHough);
             this.panel1.Controls.Add(this.button2);
@@ -88,6 +90,16 @@ namespace Lab1
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(890, 60);
             this.panel1.TabIndex = 1;
+            // 
+            // buttonFindRow
+            // 
+            this.buttonFindRow.Location = new System.Drawing.Point(803, 32);
+            this.buttonFindRow.Name = "buttonFindRow";
+            this.buttonFindRow.Size = new System.Drawing.Size(75, 23);
+            this.buttonFindRow.TabIndex = 9;
+            this.buttonFindRow.Text = "findRow";
+            this.buttonFindRow.UseVisualStyleBackColor = true;
+            this.buttonFindRow.Click += new System.EventHandler(this.buttonFindRow_Click);
             // 
             // buttonHough
             // 
@@ -168,7 +180,7 @@ namespace Lab1
             this.groupBoxFilters.Controls.Add(this.radioButtonMedian);
             this.groupBoxFilters.Location = new System.Drawing.Point(146, 5);
             this.groupBoxFilters.Name = "groupBoxFilters";
-            this.groupBoxFilters.Size = new System.Drawing.Size(484, 44);
+            this.groupBoxFilters.Size = new System.Drawing.Size(295, 44);
             this.groupBoxFilters.TabIndex = 3;
             this.groupBoxFilters.TabStop = false;
             this.groupBoxFilters.Text = "Choose filter";
@@ -176,7 +188,7 @@ namespace Lab1
             // radioButtonGray
             // 
             this.radioButtonGray.AutoSize = true;
-            this.radioButtonGray.Location = new System.Drawing.Point(408, 13);
+            this.radioButtonGray.Location = new System.Drawing.Point(195, 13);
             this.radioButtonGray.Name = "radioButtonGray";
             this.radioButtonGray.Size = new System.Drawing.Size(47, 17);
             this.radioButtonGray.TabIndex = 5;
@@ -189,7 +201,7 @@ namespace Lab1
             // radioButtonRevert
             // 
             this.radioButtonRevert.AutoSize = true;
-            this.radioButtonRevert.Location = new System.Drawing.Point(344, 22);
+            this.radioButtonRevert.Location = new System.Drawing.Point(168, 27);
             this.radioButtonRevert.Name = "radioButtonRevert";
             this.radioButtonRevert.Size = new System.Drawing.Size(57, 17);
             this.radioButtonRevert.TabIndex = 4;
@@ -201,7 +213,7 @@ namespace Lab1
             // radioButtonBox
             // 
             this.radioButtonBox.AutoSize = true;
-            this.radioButtonBox.Location = new System.Drawing.Point(295, 14);
+            this.radioButtonBox.Location = new System.Drawing.Point(146, 13);
             this.radioButtonBox.Name = "radioButtonBox";
             this.radioButtonBox.Size = new System.Drawing.Size(43, 17);
             this.radioButtonBox.TabIndex = 4;
@@ -213,7 +225,7 @@ namespace Lab1
             // radioButtonBoundary
             // 
             this.radioButtonBoundary.AutoSize = true;
-            this.radioButtonBoundary.Location = new System.Drawing.Point(152, 16);
+            this.radioButtonBoundary.Location = new System.Drawing.Point(71, 13);
             this.radioButtonBoundary.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonBoundary.Name = "radioButtonBoundary";
             this.radioButtonBoundary.Size = new System.Drawing.Size(70, 17);
@@ -226,7 +238,7 @@ namespace Lab1
             // radioButtonSharpen
             // 
             this.radioButtonSharpen.AutoSize = true;
-            this.radioButtonSharpen.Location = new System.Drawing.Point(225, 14);
+            this.radioButtonSharpen.Location = new System.Drawing.Point(98, 25);
             this.radioButtonSharpen.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSharpen.Name = "radioButtonSharpen";
             this.radioButtonSharpen.Size = new System.Drawing.Size(65, 17);
@@ -239,7 +251,7 @@ namespace Lab1
             // radioButtonMonochrome
             // 
             this.radioButtonMonochrome.AutoSize = true;
-            this.radioButtonMonochrome.Location = new System.Drawing.Point(73, 19);
+            this.radioButtonMonochrome.Location = new System.Drawing.Point(6, 26);
             this.radioButtonMonochrome.Name = "radioButtonMonochrome";
             this.radioButtonMonochrome.Size = new System.Drawing.Size(87, 17);
             this.radioButtonMonochrome.TabIndex = 1;
@@ -253,7 +265,7 @@ namespace Lab1
             this.radioButtonMedian.AutoSize = true;
             this.radioButtonMedian.BackColor = System.Drawing.SystemColors.Control;
             this.radioButtonMedian.Checked = true;
-            this.radioButtonMedian.Location = new System.Drawing.Point(7, 20);
+            this.radioButtonMedian.Location = new System.Drawing.Point(6, 13);
             this.radioButtonMedian.Name = "radioButtonMedian";
             this.radioButtonMedian.Size = new System.Drawing.Size(60, 17);
             this.radioButtonMedian.TabIndex = 0;
@@ -274,7 +286,7 @@ namespace Lab1
             // 
             // buttonApplyFilter
             // 
-            this.buttonApplyFilter.Location = new System.Drawing.Point(636, 3);
+            this.buttonApplyFilter.Location = new System.Drawing.Point(636, 0);
             this.buttonApplyFilter.Name = "buttonApplyFilter";
             this.buttonApplyFilter.Size = new System.Drawing.Size(77, 22);
             this.buttonApplyFilter.TabIndex = 1;
@@ -301,15 +313,15 @@ namespace Lab1
             this._filteredPictureBox.TabIndex = 2;
             this._filteredPictureBox.TabStop = false;
             // 
-            // buttonFindRow
+            // buttonfindNumber
             // 
-            this.buttonFindRow.Location = new System.Drawing.Point(803, 32);
-            this.buttonFindRow.Name = "buttonFindRow";
-            this.buttonFindRow.Size = new System.Drawing.Size(75, 23);
-            this.buttonFindRow.TabIndex = 9;
-            this.buttonFindRow.Text = "findRow";
-            this.buttonFindRow.UseVisualStyleBackColor = true;
-            this.buttonFindRow.Click += new System.EventHandler(this.buttonFindRow_Click);
+            this.buttonfindNumber.Location = new System.Drawing.Point(555, -1);
+            this.buttonfindNumber.Name = "buttonfindNumber";
+            this.buttonfindNumber.Size = new System.Drawing.Size(75, 23);
+            this.buttonfindNumber.TabIndex = 10;
+            this.buttonfindNumber.Text = "findNumber";
+            this.buttonfindNumber.UseVisualStyleBackColor = true;
+            this.buttonfindNumber.Click += new System.EventHandler(this.buttonfindNumber_Click);
             // 
             // Form1
             // 
@@ -356,6 +368,7 @@ namespace Lab1
         private Button buttonHough;
         private RadioButton radioButtonGray;
         private Button buttonFindRow;
+        private Button buttonfindNumber;
     }
 }
 

@@ -714,5 +714,75 @@ namespace Logic
             double avg = ((double)intervals.Sum())/intervals.Count;
             return intervals.Select(i => (avg - i)*(avg - i)).Sum()/intervals.Count;
         }
+
+        public static Dictionary<int, List<Point>> DetectCounterNumbers(Bitmap sourceBitmap,
+            Dictionary<int, List<Point>> rowsPoints, out Bitmap outBitmap)
+        {
+            List<Point> allRowsPoints = rowsPoints.SelectMany(kv => kv.Value).ToList();
+            List<int> columnsIndexes = allRowsPoints.Select(p => p.X).Distinct().OrderBy(c => c).ToList();
+            Dictionary<int, List<Point>> columnPoints = new Dictionary<int, List<Point>>();
+            foreach (int columnsIndex in columnsIndexes)
+            {
+                columnPoints.Add(columnsIndex, allRowsPoints.Where(p => p.X == columnsIndex).ToList());
+            }
+
+            Color zeroColor = Color.FromArgb(0, 0, 0, 0);
+            outBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+            for (int i = 0; i < outBitmap.Width; i++)
+                for (int j = 0; j < outBitmap.Height; j++)
+                    outBitmap.SetPixel(i, j, zeroColor);
+
+            int rowsCount = rowsPoints.Count;
+            for (int i = columnsIndexes.Count-1; i >=0;i--)
+            {
+                int columnIndex = columnsIndexes[i];
+                //int blackCount = 0;
+                //foreach (Point p in columnPoints[columnIndex])
+                //{
+                //    Color color = sourceBitmap.GetPixel(p.X, p.Y);
+                //    blackCount += color.R;
+                //}
+                if /*(blackCount!=0)*/(columnPoints[columnIndex].Count != rowsCount 
+                    || columnPoints[columnIndex].All(p => sourceBitmap.GetPixel(p.X, p.Y).R == 255))
+                    //if all column white == without object
+                {
+                    columnPoints.Remove(columnIndex);
+                    columnsIndexes.RemoveAt(i);
+                }
+            }
+
+            List<List<int>> groupColumns = new List<List<int>>();
+            int previousElement = columnsIndexes[0];
+            groupColumns.Add(new List<int>());
+            int groupcounter = 0;
+            for (int i = 1; i < columnsIndexes.Count; i++)
+            {
+                groupColumns[groupcounter].Add(previousElement);
+                if (columnsIndexes[i] - 1 != previousElement)
+                {
+                    groupColumns.Add(new List<int>());
+                    groupcounter++;
+                }
+                previousElement = columnsIndexes[i];
+            }
+
+            Dictionary<int, List<Point>> objectsDictResult = new Dictionary<int, List<Point>>();
+            for (int objCounter = 0; objCounter < groupColumns.Count; objCounter++)
+            {
+                objectsDictResult.Add(objCounter, new List<Point>());
+                foreach (int column in groupColumns[objCounter])
+                    objectsDictResult[objCounter].AddRange(columnPoints[column]);
+            }
+
+            foreach (var rowpoints in objectsDictResult.Values)
+            {
+                foreach (Point cPoint in rowpoints)
+                {
+                    outBitmap.SetPixel(cPoint.X, cPoint.Y, sourceBitmap.GetPixel(cPoint.X, cPoint.Y));
+                }
+            }
+
+            return objectsDictResult;
+        }
     }
 }
