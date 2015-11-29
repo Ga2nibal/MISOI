@@ -11,5 +11,9 @@
         public const string BoundaryFilter = "BoundaryFilter";
 
         public const string BoxFilter = "BoxFilter";
+
+        public const string Revert = "Revert";
+
+        public const string Gray = "Gray";
     }
 }

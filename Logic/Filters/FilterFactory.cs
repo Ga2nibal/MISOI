@@ -26,6 +26,14 @@
                 case FilterNames.BoxFilter:
                     result = new BoxFilter();
                     break;
+
+                case FilterNames.Revert:
+                    result = new RevertFilter();
+                    break;
+
+                case FilterNames.Gray:
+                    result = new GrayFilter();
+                    break;
             }
 
             return result;

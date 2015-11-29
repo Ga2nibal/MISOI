@@ -33,11 +33,15 @@ namespace Lab1
         {
             this._sourcePictureBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonHough = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.waitLable = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBoxFilters = new System.Windows.Forms.GroupBox();
+            this.radioButtonRevert = new System.Windows.Forms.RadioButton();
             this.radioButtonBox = new System.Windows.Forms.RadioButton();
             this.radioButtonBoundary = new System.Windows.Forms.RadioButton();
             this.radioButtonSharpen = new System.Windows.Forms.RadioButton();
@@ -47,6 +51,8 @@ namespace Lab1
             this.buttonApplyFilter = new System.Windows.Forms.Button();
             this.buttonOpenImage = new System.Windows.Forms.Button();
             this._filteredPictureBox = new System.Windows.Forms.PictureBox();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.radioButtonGray = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this._sourcePictureBox)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBoxFilters.SuspendLayout();
@@ -55,15 +61,18 @@ namespace Lab1
             // 
             // _sourcePictureBox
             // 
-            this._sourcePictureBox.Location = new System.Drawing.Point(0, 0);
+            this._sourcePictureBox.Location = new System.Drawing.Point(0, 50);
             this._sourcePictureBox.Name = "_sourcePictureBox";
-            this._sourcePictureBox.Size = new System.Drawing.Size(890, 280);
+            this._sourcePictureBox.Size = new System.Drawing.Size(890, 250);
             this._sourcePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this._sourcePictureBox.TabIndex = 0;
             this._sourcePictureBox.TabStop = false;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonHough);
+            this.panel1.Controls.Add(this.button2);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.waitLable);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
@@ -77,6 +86,36 @@ namespace Lab1
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(890, 60);
             this.panel1.TabIndex = 1;
+            // 
+            // buttonHough
+            // 
+            this.buttonHough.Location = new System.Drawing.Point(721, 30);
+            this.buttonHough.Name = "buttonHough";
+            this.buttonHough.Size = new System.Drawing.Size(75, 23);
+            this.buttonHough.TabIndex = 8;
+            this.buttonHough.Text = "hough";
+            this.buttonHough.UseVisualStyleBackColor = true;
+            this.buttonHough.Click += new System.EventHandler(this.buttonHough_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(636, 28);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 7;
+            this.button2.Text = "change";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(802, 2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Save Image";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // waitLable
             // 
@@ -118,6 +157,8 @@ namespace Lab1
             // 
             // groupBoxFilters
             // 
+            this.groupBoxFilters.Controls.Add(this.radioButtonGray);
+            this.groupBoxFilters.Controls.Add(this.radioButtonRevert);
             this.groupBoxFilters.Controls.Add(this.radioButtonBox);
             this.groupBoxFilters.Controls.Add(this.radioButtonBoundary);
             this.groupBoxFilters.Controls.Add(this.radioButtonSharpen);
@@ -125,49 +166,60 @@ namespace Lab1
             this.groupBoxFilters.Controls.Add(this.radioButtonMedian);
             this.groupBoxFilters.Location = new System.Drawing.Point(146, 5);
             this.groupBoxFilters.Name = "groupBoxFilters";
-            this.groupBoxFilters.Size = new System.Drawing.Size(453, 44);
+            this.groupBoxFilters.Size = new System.Drawing.Size(484, 44);
             this.groupBoxFilters.TabIndex = 3;
             this.groupBoxFilters.TabStop = false;
             this.groupBoxFilters.Text = "Choose filter";
             // 
+            // radioButtonRevert
+            // 
+            this.radioButtonRevert.AutoSize = true;
+            this.radioButtonRevert.Location = new System.Drawing.Point(344, 22);
+            this.radioButtonRevert.Name = "radioButtonRevert";
+            this.radioButtonRevert.Size = new System.Drawing.Size(57, 17);
+            this.radioButtonRevert.TabIndex = 4;
+            this.radioButtonRevert.TabStop = true;
+            this.radioButtonRevert.Tag = "Revert";
+            this.radioButtonRevert.Text = "Revert";
+            this.radioButtonRevert.UseVisualStyleBackColor = true;
+            // 
             // radioButtonBox
             // 
             this.radioButtonBox.AutoSize = true;
-            this.radioButtonBox.Location = new System.Drawing.Point(310, 20);
+            this.radioButtonBox.Location = new System.Drawing.Point(295, 14);
             this.radioButtonBox.Name = "radioButtonBox";
-            this.radioButtonBox.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonBox.Size = new System.Drawing.Size(43, 17);
             this.radioButtonBox.TabIndex = 4;
             this.radioButtonBox.TabStop = true;
+            this.radioButtonBox.Tag = "BoxFilter";
             this.radioButtonBox.Text = "Box";
-            this.radioButtonBox.Tag = FilterNames.BoxFilter;
             this.radioButtonBox.UseVisualStyleBackColor = true;
             // 
             // radioButtonBoundary
             // 
             this.radioButtonBoundary.AutoSize = true;
-            this.radioButtonBoundary.Location = new System.Drawing.Point(165, 21);
+            this.radioButtonBoundary.Location = new System.Drawing.Point(152, 16);
             this.radioButtonBoundary.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonBoundary.Name = "radioButtonBoundary";
             this.radioButtonBoundary.Size = new System.Drawing.Size(70, 17);
             this.radioButtonBoundary.TabIndex = 3;
             this.radioButtonBoundary.TabStop = true;
+            this.radioButtonBoundary.Tag = "BoundaryFilter";
             this.radioButtonBoundary.Text = "Boundary";
-            this.radioButtonBoundary.Tag = FilterNames.BoundaryFilter;
             this.radioButtonBoundary.UseVisualStyleBackColor = true;
             // 
             // radioButtonSharpen
             // 
             this.radioButtonSharpen.AutoSize = true;
-            this.radioButtonSharpen.Location = new System.Drawing.Point(239, 20);
+            this.radioButtonSharpen.Location = new System.Drawing.Point(225, 14);
             this.radioButtonSharpen.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonSharpen.Name = "radioButtonSharpen";
             this.radioButtonSharpen.Size = new System.Drawing.Size(65, 17);
             this.radioButtonSharpen.TabIndex = 2;
             this.radioButtonSharpen.TabStop = true;
+            this.radioButtonSharpen.Tag = "SharpenFilter";
             this.radioButtonSharpen.Text = "Sharpen";
-            this.radioButtonSharpen.Tag = FilterNames.SharpenFilter;
             this.radioButtonSharpen.UseVisualStyleBackColor = true;
-            this.radioButtonSharpen.Visible = false;
             // 
             // radioButtonMonochrome
             // 
@@ -177,8 +229,8 @@ namespace Lab1
             this.radioButtonMonochrome.Size = new System.Drawing.Size(87, 17);
             this.radioButtonMonochrome.TabIndex = 1;
             this.radioButtonMonochrome.TabStop = true;
+            this.radioButtonMonochrome.Tag = "MonochromeFilter";
             this.radioButtonMonochrome.Text = "Monochrome";
-            this.radioButtonMonochrome.Tag = FilterNames.MonochromeFilter;
             this.radioButtonMonochrome.UseVisualStyleBackColor = true;
             // 
             // radioButtonMedian
@@ -191,9 +243,9 @@ namespace Lab1
             this.radioButtonMedian.Size = new System.Drawing.Size(60, 17);
             this.radioButtonMedian.TabIndex = 0;
             this.radioButtonMedian.TabStop = true;
+            this.radioButtonMedian.Tag = "MedianFilter";
             this.radioButtonMedian.Text = "Median";
             this.radioButtonMedian.UseVisualStyleBackColor = false;
-            this.radioButtonMedian.Tag = FilterNames.MediumFilter;
             // 
             // hScrollBarLevel
             // 
@@ -227,18 +279,31 @@ namespace Lab1
             // 
             // _filteredPictureBox
             // 
-            this._filteredPictureBox.Location = new System.Drawing.Point(0, 288);
+            this._filteredPictureBox.Location = new System.Drawing.Point(0, 310);
             this._filteredPictureBox.Name = "_filteredPictureBox";
-            this._filteredPictureBox.Size = new System.Drawing.Size(890, 280);
+            this._filteredPictureBox.Size = new System.Drawing.Size(890, 250);
             this._filteredPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this._filteredPictureBox.TabIndex = 2;
             this._filteredPictureBox.TabStop = false;
+            // 
+            // radioButtonGray
+            // 
+            this.radioButtonGray.AutoSize = true;
+            this.radioButtonGray.Location = new System.Drawing.Point(408, 13);
+            this.radioButtonGray.Name = "radioButtonGray";
+            this.radioButtonGray.Size = new System.Drawing.Size(47, 17);
+            this.radioButtonGray.TabIndex = 5;
+            this.radioButtonGray.TabStop = true;
+            this.radioButtonGray.Tag = "Gray";
+            this.radioButtonGray.Text = "Gray";
+            this.radioButtonGray.UseVisualStyleBackColor = true;
+            this.radioButtonGray.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(890, 576);
+            this.ClientSize = new System.Drawing.Size(890, 600);
             this.Controls.Add(this._filteredPictureBox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this._sourcePictureBox);
@@ -272,6 +337,12 @@ namespace Lab1
         private Label waitLable;
         private PictureBox _filteredPictureBox;
         private RadioButton radioButtonBox;
+        private Button button1;
+        private SaveFileDialog saveFileDialog1;
+        private Button button2;
+        private RadioButton radioButtonRevert;
+        private Button buttonHough;
+        private RadioButton radioButtonGray;
     }
 }
 

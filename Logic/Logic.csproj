@@ -36,6 +36,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,16 +45,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extention.cs" />
     <Compile Include="Filters\BaseAbstractFilter.cs" />
     <Compile Include="Filters\BoundaryFilter.cs" />
     <Compile Include="Filters\BoxFilter.cs" />
     <Compile Include="Filters\FilterFactory.cs" />
     <Compile Include="Filters\FilterNames.cs" />
+    <Compile Include="Filters\GrayFilter.cs" />
     <Compile Include="Filters\IFilter.cs" />
     <Compile Include="Filters\MedianFilter.cs" />
     <Compile Include="Filters\MonochromeFilter.cs" />
+    <Compile Include="Filters\RevertFilter.cs" />
     <Compile Include="Filters\SharpenFilter.cs" />
+    <Compile Include="HoughCircle.cs" />
+    <Compile Include="ImageAnalyzer.cs" />
+    <Compile Include="ImageConverter.cs" />
+    <Compile Include="ImageProcessor.cs" />
+    <Compile Include="KMeansClassificator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shape.cs" />
+    <Compile Include="ShapePropertyHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
